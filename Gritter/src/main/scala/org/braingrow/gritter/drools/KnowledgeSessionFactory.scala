@@ -43,7 +43,7 @@ object KnowledgeSessionFactory {
     //var logger : KnowledgeRuntimeLogger = KnowledgeRuntimeLoggerFactory.newConsoleLogger(ksession)
     globals.foreach {
       case (key, obj) => {
-        ksession.setGlobal("listReceiver", obj)
+        ksession.setGlobal(key, obj)
       }
     }
 

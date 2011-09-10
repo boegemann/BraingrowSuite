@@ -1,6 +1,7 @@
 package org.braingrow.gritter.drools.twitterutil
 
 import org.braingrow.gritter.twitter.StatusEvent
+import org.drools.runtime.StatefulKnowledgeSession
 
 /**
  * User: ibogemann
@@ -21,17 +22,19 @@ object TextExtractor {
     "aqui", "than", "look", "tudo", "quem", "todos", "should", "agora", "quando", "porque", "their", "better", "check", "start"
   )
 
-  def extractAllWords(statusEvent: StatusEvent, minChars: Int = 3): Traversable[String] = {
-    statusEvent.text.replaceAll("[^A-Za-z ]", " ").trim().split(' ').filter(_.length() > minChars)
-  }
-
   def extractAllWordsAsIdentifiableText(statusEvent: StatusEvent, minChars: Int = 3): Traversable[IdentifiableText] = {
     statusEvent.text.replaceAll("[^A-Za-z ]", " ")
       .split(' ')
       .map(_.toLowerCase().trim())
       .filter(_.length() > 3)
       .filter(!ignored.contains(_))
+      .distinct
       .map(s => IdentifiableText(s, statusEvent.idStr))
+  }
+
+  def insertAllWordsAsIdentifiableAndFireRules (knowledgeSession: StatefulKnowledgeSession,statusEvent: StatusEvent, minChars: Int = 3){
+    extractAllWordsAsIdentifiableText(statusEvent,minChars).foreach(knowledgeSession.insert (_))
+    knowledgeSession.fireAllRules()
   }
 
 }

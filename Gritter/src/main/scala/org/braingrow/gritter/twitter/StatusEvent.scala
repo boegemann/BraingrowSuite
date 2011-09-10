@@ -26,7 +26,6 @@ object StatusEvent extends JsonReader {
 
 
   def fromJson(json: JValue): StatusEvent = {
-    println(json)
     new StatusEvent {
       val createdAt = asDate(json \ "created_at")
       val idStr = asText(json \ "id_str")

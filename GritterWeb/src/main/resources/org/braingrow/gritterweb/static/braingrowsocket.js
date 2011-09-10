@@ -41,6 +41,7 @@ var braingrowsocket = ( function() {
     var values = {};
     var series = {};
 
+/*
 	function onData(msg) {
         if(msg.data) {
 			var dataSeries = $.parseJSON(msg.data)
@@ -78,7 +79,10 @@ var braingrowsocket = ( function() {
 			}
 		}
 	}
-
+*/
+    function onData(msg) {
+     console.log(msg.data);
+    }
 
 	bg.startUp = function() {
 		var ws = new WebSocket(location, "braingrowsocket");
