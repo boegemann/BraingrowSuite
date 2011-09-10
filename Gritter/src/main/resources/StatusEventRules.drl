@@ -1,0 +1,20 @@
+package org.braingrow.gritter.rules
+
+import java.lang.String
+import org.braingrow.gritter.twitter.StatusEvent
+
+global org.braingrow.gritter.drools.ActorBackedMessageNotifier notifier;
+
+declare StatusEvent
+   @role(event)
+end
+
+
+
+rule "Log Stati"
+   dialect "mvel"
+   when
+    $event: StatusEvent()
+   then
+    System.out.println($event);
+end
