@@ -16,7 +16,7 @@ rule "Collect Words"
    dialect "mvel"
    when
     $idText:IdentifiableText()
-    $list: ArrayList() from accumulate($it:IdentifiableText() over window:time(60m),top10($it))
+    $list: ArrayList() from accumulate($it:IdentifiableText() over window:time(10m),top10($it))
    then
     notifier.onMessage($list);
 end

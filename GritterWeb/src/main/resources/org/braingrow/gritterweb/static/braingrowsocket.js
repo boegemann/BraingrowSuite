@@ -32,56 +32,50 @@ var braingrowsocket = ( function() {
 	    "#ADD8E6",
 	    "#000000"
 	];
-	var chartData = {
-        type : "line",
-        defaultAxis : {
-          labels : true
-         }
-    };
-    var values = {};
-    var series = {};
 
-/*
-	function onData(msg) {
-        if(msg.data) {
-			var dataSeries = $.parseJSON(msg.data)
-
-            if (dataSeries.length>0) {
-                // get the newest series for labels and to analyse the rest
-                var newest = dataSeries[0] ;
-
-                var legendHolder = $(document.createElement("div"));
-                legendHolder.attr("id", "legendholder");
-                i=0;
-                for (key in newest) {
-                    if (newest.hasOwnProperty(key))  {
-                        i++; // need it for the series number;
-                        var curSeries = [];
-                        for (var j=0,l2=dataSeries.length;j<l2;j++){
-                            var value = dataSeries[j][key];
-                            curSeries.push (exists(value)?value:null);
-                        }
-                        values["serie"+i] = curSeries;
-
-                        series["serie"+i] = {color:colors[i-1]};
-                    }
-                    var legendEntry = $(document.createElement("li"));
-                    legendEntry.css('color', colors[i-1]);
-                    legendEntry.append($(document.createTextNode(key + " (" + newest[key] +")") ));
-                    legendHolder.append(legendEntry);
-                }
-                $("#legendholder").replaceWith(legendHolder);
-                chartData.values=values;
-                chartData.series=series;
-
-                $("#chart").chart(chartData);
-                console.log(chartData);
-			}
-		}
-	}
-*/
+	var history =[]
     function onData(msg) {
-     console.log(msg.data);
+        var currentTime = new Date()
+        var hours = currentTime.getHours()
+        var minutes = currentTime.getMinutes()
+        var seconds = currentTime.getSeconds()
+        if (minutes < 10)
+            minutes = "0" + minutes ;
+        if (seconds < 10)
+            seconds = "0" + seconds ;
+        var data = $.parseJSON(msg.data) ;
+        var item =  {dateTime:hours + ":" + minutes + ":" + seconds, data:data} ;
+
+        history.unshift(item);
+        if (history.length>10){
+            history.pop();
+        }
+        paint();
+    }
+
+    function paint(){
+        console.log(history);
+        var newTable = $(document.createElement("div"));
+        newTable.attr("id", "historyTable");
+        newTable.addClass("historyTable");
+        for (var cntHistory=0,lHistory=history.length;cntHistory<lHistory;cntHistory++){
+            var curHistoryItem = history[cntHistory];
+            var divCurList = $(document.createElement("div"));
+            divCurList.addClass("historyColumn");
+            var divHeader = $(document.createElement("div"));
+            divHeader.addClass("columnItem columnHeader");
+            divHeader.append(document.createTextNode(curHistoryItem.dateTime))
+            divCurList.append(divHeader);
+            var list = curHistoryItem.data;
+            for (var i=0,l=list.length;i<l;i++){
+                var curDiv = $(document.createElement("div"));
+                curDiv.addClass("columnItem");
+                curDiv.append(document.createTextNode(list[i].word + " (" + list[i].count + ")"));
+                divCurList.append(curDiv);
+            }
+            newTable.append(divCurList);
+        }
+        $("#historyTable").replaceWith(newTable);
     }
 
 	bg.startUp = function() {

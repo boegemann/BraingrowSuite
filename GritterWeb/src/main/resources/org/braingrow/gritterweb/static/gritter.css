@@ -3,14 +3,19 @@
     height:500px;
 }
 
-.chart {
-    width:50%;
-    height:100%;
+.historyColumn {
+    width:200px;
+    height:500px;;
     float: left;
 }
 
-.legend {
-    width:50%;
-    height:100%;
-    float: left;
+.columnHeader {
+    font-weight:bolder;
 }
+
+.historyTable {
+    display: inline-block;
+    height: 300px;
+    width: 2000px;
+}
+

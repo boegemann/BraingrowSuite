@@ -46,7 +46,7 @@ object GritterWeb {
                   lastList = list
                   webSocketActor ! Serialization.write(list.map(
                     (t) => {
-                      Map(t._1 -> Map("count" -> t._2.size, "ids" -> t._2.map(_.statusId)))
+                      Map("word" -> t._1, "count" -> t._2.size, "ids" -> t._2.map(_.statusId))
                     }
                   ))
                 }
@@ -60,11 +60,7 @@ object GritterWeb {
       new TwitterStreamListener().startListener(s, actorOf(new Actor {
         def receive = {
           case s: StatusEvent =>
-            TextExtractor.insertAllWordsAsIdentifiableAndFireRules(
-              droolsSession,
-              s,
-              3
-            )
+            TextExtractor.insertAllWordsAsIdentifiableAndFireRules(droolsSession, s, 3)
         }
       }).start())
     }
