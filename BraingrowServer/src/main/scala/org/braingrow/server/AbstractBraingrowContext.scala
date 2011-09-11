@@ -12,11 +12,11 @@ import org.eclipse.jetty.server.Handler
 abstract class AbstractBraingrowContext(path: String) {
   private var _started = false
 
-  protected def getContext() = {
+  protected def createContext() = {
     val context = new ContextHandler();
     context.setContextPath(path);
     context.setResourceBase(".");
-    context.setClassLoader(Thread.currentThread().getContextClassLoader());
+    context.setClassLoader(Thread.currentThread().getContextClassLoader);
     context
   }
 
@@ -26,7 +26,7 @@ abstract class AbstractBraingrowContext(path: String) {
     try {
       if (_started) throw new IllegalStateException("Context already started")
       _started = true
-      val context = getContext()
+      val context = createContext()
       context.setHandler(createHandler())
       server.addHandler(context);
 

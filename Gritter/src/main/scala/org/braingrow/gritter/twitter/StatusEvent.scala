@@ -1,8 +1,7 @@
 package org.braingrow.gritter.twitter
 
-import net.liftweb.json.JsonAST.{JValue, JString}
+import net.liftweb.json.JsonAST.JValue
 import java.util.Date
-import java.text.{SimpleDateFormat, DateFormat}
 
 /**
  * User: ibogemann

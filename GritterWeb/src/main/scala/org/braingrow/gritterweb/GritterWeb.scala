@@ -1,14 +1,13 @@
 package org.braingrow.gritterweb
 
-import akka.actor.Actor
-import org.braingrow.server.{PublishingWebSocketActor, StaticClasspathContentRoot, BraingrowServer}
-import org.braingrow.gritter.twitter.TwitterStreamListener
 import dispatch.:/
-import org.braingrow.gritter.drools.{ActorBackedMessageNotifier, KnowledgeSessionFactory}
-import akka.routing.Routing._
-import akka.routing.SmallestMailboxFirstIterator
+import akka.actor.Actor
 import akka.actor.Actor._
-import org.braingrow.gritter.actors.{SplitTextActor, DroolsActor, FilterSameListActor}
+import org.braingrow.server.{StaticClasspathContentRoot, BraingrowServer, PublishingWebSocketActor}
+import org.braingrow.gritter.twitter.{StatusEvent, TwitterStreamListener}
+import org.braingrow.gritter.drools.{ActorBackedMessageNotifier, KnowledgeSessionFactory}
+import org.braingrow.gritter.drools.twitterutil.{TextExtractor, IdentifiableText}
+import net.liftweb.json.Serialization
 
 /**
  * User: ibogemann
@@ -18,32 +17,58 @@ import org.braingrow.gritter.actors.{SplitTextActor, DroolsActor, FilterSameList
 
 object GritterWeb {
 
-  val s = :/("stream.twitter.com") / "1/statuses/sample.json" as ("IngoBoegemann", "arnsberg0855")
+  implicit val formats = net.liftweb.json.DefaultFormats
 
 
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String]) {
     val server = new BraingrowServer(8080);
-    Actor.spawn {
-      server.startServer();
+    if (args.size != 2) {
+      println("You need to start the application with a username and password for your Twitter account!")
+    } else {
+      val s = :/("stream.twitter.com") / "1/statuses/sample.json" as(args(0), args(1))
+      Actor.spawn {
+        server.startServer();
+      }
+      new StaticClasspathContentRoot("/gritter", "org/braingrow/gritterweb/static").start(server)
+
+      val webSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws")).start()
+      val droolsSession = KnowledgeSessionFactory.createKnowledgeSessionFromClassPathResource(
+        "StatusEventRules.drl", Map(
+          "notifier" -> new ActorBackedMessageNotifier(actorOf(new Actor {
+            var lastList = List[(String, List[IdentifiableText])]()
+
+            def receive = {
+              case list: List[(String, List[IdentifiableText])] =>
+                if (list != lastList) {
+                  println({
+                    self.mailboxSize + ":" + list.map(t => t._1 + ":" + t._2.size).mkString(",")
+                  })
+                  lastList = list
+                  webSocketActor ! Serialization.write(list.map(
+                    (t) => {
+                      Map(t._1 -> Map("count" -> t._2.size, "ids" -> t._2.map(_.statusId)))
+                    }
+                  ))
+                }
+
+
+            }
+          }
+          ).start())))
+
+
+      new TwitterStreamListener().startListener(s, actorOf(new Actor {
+        def receive = {
+          case s: StatusEvent =>
+            TextExtractor.insertAllWordsAsIdentifiableAndFireRules(
+              droolsSession,
+              s,
+              3
+            )
+        }
+      }).start())
     }
-    new StaticClasspathContentRoot("/gritter", "org/braingrow/gritterweb/static").start(server)
 
-    // Actor flow configuration
-    val webSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws")).start()
-    val countToJsonActor = actorOf(new WordCountListToJsonActor(webSocketActor)).start()
-    val filterActor = actorOf(new FilterSameListActor(countToJsonActor)).start()
-    val droolsSession = KnowledgeSessionFactory.createKnowledgeSessionFromClassPathResource(
-      "WordRules.drl", Map("listReceiver" -> new ActorBackedMessageNotifier(filterActor)))
-    // the drools actor is the slowest - hence we use a load balancer to parallelize it
-    val lba = loadBalancerActor(new SmallestMailboxFirstIterator(
-      (1 to 2).map((i) => {
-        actorOf(new DroolsActor(droolsSession)).start()
-      })
-    ))
-
-    val textSplitter = actorOf(new SplitTextActor(lba)).start();
-
-    new TwitterStreamListener().startListener(s, textSplitter)
 
   }
 }

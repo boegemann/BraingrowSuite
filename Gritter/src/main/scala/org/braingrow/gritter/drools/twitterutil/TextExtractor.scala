@@ -19,21 +19,24 @@ object TextExtractor {
     "really", "only", "lagi", "sama", "please", "follow", "need", "first", "here", "even", "live", "hate", "great", "super", "fuck",
     "after", "even", "them", "much", "someone", "dont", "besok", "life", "come", "real", "mais", "best", "over", "tweet", "juga",
     "como", "kamu", "jadi", "bisa", "minha", "banget", "been", "hoje", "tapi", "kita", "kalo", "shit", "nada", "casa", "miss", "pero",
-    "aqui", "than", "look", "tudo", "quem", "todos", "should", "agora", "quando", "porque", "their", "better", "check", "start"
+    "aqui", "than", "look", "tudo", "quem", "todos", "should", "agora", "quando", "porque", "their", "better", "check", "start", "punya",
+    "masuk", "tidak", "semua", "bukan", "hehe", "esse", "dulu", "adalah", "didn", "hanya", "seperti", "buat", "isso", "hahahaha", "okay",
+    "those", "were", "goes", "bring", "true", "kenapa"
   )
 
   def extractAllWordsAsIdentifiableText(statusEvent: StatusEvent, minChars: Int = 3): Traversable[IdentifiableText] = {
+    if (statusEvent.text.contains("people")) println("People")
     statusEvent.text.replaceAll("[^A-Za-z ]", " ")
       .split(' ')
-      .map(_.toLowerCase().trim())
+      .map(_.toLowerCase.trim)
       .filter(_.length() > 3)
       .filter(!ignored.contains(_))
       .distinct
       .map(s => IdentifiableText(s, statusEvent.idStr))
   }
 
-  def insertAllWordsAsIdentifiableAndFireRules (knowledgeSession: StatefulKnowledgeSession,statusEvent: StatusEvent, minChars: Int = 3){
-    extractAllWordsAsIdentifiableText(statusEvent,minChars).foreach(knowledgeSession.insert (_))
+  def insertAllWordsAsIdentifiableAndFireRules(knowledgeSession: StatefulKnowledgeSession, statusEvent: StatusEvent, minChars: Int = 3) {
+    extractAllWordsAsIdentifiableText(statusEvent, minChars).foreach(knowledgeSession.insert(_))
     knowledgeSession.fireAllRules()
   }
 

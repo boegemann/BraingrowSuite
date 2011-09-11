@@ -26,7 +26,7 @@ class SplitTextActor(val nextStep: ActorRef) extends Actor {
   protected def receive = {
     case se: StatusEvent => {
       //println("SplitTextActor: " + self.mailboxSize)
-      se.text.replaceAll("[^A-Za-z ]", " ").split(' ').map(_.toLowerCase().trim()).filter(_.length() > 3).filter(!ignored.contains(_)).map(s => nextStep ! (s))
+      se.text.replaceAll("[^A-Za-z ]", " ").split(' ').map(_.toLowerCase.trim).filter(_.length() > 3).filter(!ignored.contains(_)).map(s => nextStep ! (s))
     }
 
   }

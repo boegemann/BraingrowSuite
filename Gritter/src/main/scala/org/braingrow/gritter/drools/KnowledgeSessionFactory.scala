@@ -5,7 +5,6 @@ import org.drools.builder.{ResourceType, KnowledgeBuilderFactory, KnowledgeBuild
 import org.drools.conf.EventProcessingOption
 import org.drools.{KnowledgeBase, KnowledgeBaseFactory}
 import org.drools.runtime.StatefulKnowledgeSession
-import org.drools.logger.{KnowledgeRuntimeLoggerFactory, KnowledgeRuntimeLogger}
 
 /**
  * User: ibogemann
@@ -24,14 +23,15 @@ object KnowledgeSessionFactory {
 
     val config = KnowledgeBaseFactory.newKnowledgeBaseConfiguration();
     config.setOption(EventProcessingOption.STREAM)
+    config.setProperty("drools.accumulate.function.top10", "org.braingrow.gritter.drools.Top10")
 
     // Create a new knowledgebase
     val kbase: KnowledgeBase = KnowledgeBaseFactory.newKnowledgeBase(config)
 
     // Add the compiled rule sets and workflows into the knowledgebase
-    val packages = kbuilder.getKnowledgePackages();
+    val packages = kbuilder.getKnowledgePackages;
     if (kbuilder.hasErrors) {
-      System.err.println(kbuilder.getErrors());
+      System.err.println(kbuilder.getErrors);
       System.exit(-1)
     }
     kbase.addKnowledgePackages(packages)

@@ -2,7 +2,7 @@ package org.braingrow.server
 
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.Handler
-import org.eclipse.jetty.server.handler.{HandlerCollection, HandlerList}
+import org.eclipse.jetty.server.handler.HandlerCollection
 
 /**
  * User: ibogemann
@@ -28,6 +28,7 @@ class BraingrowServer(val port: Int) {
   }
 
   def isStarted = server.isStarted
+
   def isStarting = server.isStarting
 
 

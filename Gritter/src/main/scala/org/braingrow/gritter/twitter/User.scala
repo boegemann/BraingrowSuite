@@ -23,7 +23,7 @@ abstract class User {
   val createdAt: Date
 }
 
-object User  extends JsonReader {
+object User extends JsonReader {
 
   def fromJson(json: JValue): User = {
     new User {

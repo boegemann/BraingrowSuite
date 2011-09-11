@@ -2,7 +2,7 @@ package org.braingrow.gritter.twitter
 
 import dispatch.{futures, Http, Request}
 import net.liftweb.json._
-import akka.actor.{ActorRef}
+import akka.actor.ActorRef
 
 /**
  * User: ibogemann
@@ -33,7 +33,7 @@ class TwitterStreamListener {
               case ex: Exception => ex.printStackTrace()
             }
           }
-          stm.close
+          stm.close()
         }
       })
     }

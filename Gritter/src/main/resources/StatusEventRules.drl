@@ -7,42 +7,18 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.ArrayList
 
 global org.braingrow.gritter.drools.ActorBackedMessageNotifier notifier;
-global org.braingrow.gritter.drools.twitterutil.DynamicSizeRegulator sizeRegulator;
 
 declare IdentifiableText
    @role(event)
 end
 
-declare Tuple3
-    @role(event)
-end
-
 rule "Collect Words"
    dialect "mvel"
    when
-    $idText:IdentifiableText($word:text,$id:statusId)
-    $list: ArrayList (size > 30) from collect($it:IdentifiableText(text==$word) over window:time(10m))
+    $idText:IdentifiableText()
+    $list: ArrayList() from accumulate($it:IdentifiableText() over window:time(60m),top10($it))
    then
-    $word.intern()
-    insert( new Tuple3($word,$list.size(),$list))
+    notifier.onMessage($list);
 end
 
-
-rule "Remove duplicates 1" salience 10
-   dialect "mvel"
-   when
-    $tuple1:Tuple3($word:_1,$count:_2)
-    $tuple2:Tuple3(_1==$word, this before $tuple1 )
-   then
-    retract ($tuple2);
-end
-
-rule "Get word list"
-   dialect "mvel"
-   when
-    $wordlist: ArrayList() from collect ($t1:Tuple3())
-
-   then
-    notifier.onMessage($wordlist);
-end
 

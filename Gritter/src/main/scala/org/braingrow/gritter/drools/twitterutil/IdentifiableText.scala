@@ -6,4 +6,4 @@ package org.braingrow.gritter.drools.twitterutil
  * Time: 20:28
  */
 
-case class IdentifiableText(text:String, statusId:String)
+case class IdentifiableText(text: String, statusId: String)

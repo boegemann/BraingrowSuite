@@ -10,7 +10,6 @@
     <artifactId>Gritter</artifactId>
 
 
-
     <dependencies>
         <dependency>
             <groupId>org.scala-lang</groupId>

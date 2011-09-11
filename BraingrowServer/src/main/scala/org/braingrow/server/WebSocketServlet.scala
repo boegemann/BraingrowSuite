@@ -9,7 +9,7 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest, HttpServlet}
  * Time: 18:40
  */
 
-class WebSocketServlet (acceptor: WebSocketFactory.Acceptor) extends HttpServlet {
+class WebSocketServlet(acceptor: WebSocketFactory.Acceptor) extends HttpServlet {
   private val _wsFactory = new WebSocketFactory(acceptor)
   _wsFactory.setBufferSize(4096);
   _wsFactory.setMaxIdleTime(60000);

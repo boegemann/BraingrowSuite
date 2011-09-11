@@ -1,6 +1,6 @@
 package org.braingrow.server
 
-import org.eclipse.jetty.server.handler.{ResourceHandler, ContextHandler}
+import org.eclipse.jetty.server.handler.ResourceHandler
 import org.eclipse.jetty.util.resource.Resource
 
 /**

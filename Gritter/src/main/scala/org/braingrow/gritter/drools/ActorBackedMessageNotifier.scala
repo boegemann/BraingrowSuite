@@ -8,8 +8,8 @@ import akka.actor.ActorRef
  * Time: 13:14
  */
 
-class ActorBackedMessageNotifier (actorRef:ActorRef) {
-    def onMessage(message:Object) {
-      actorRef ! message
-    }
+class ActorBackedMessageNotifier(actorRef: ActorRef) {
+  def onMessage(message: Object) {
+    actorRef ! message
   }
+}
