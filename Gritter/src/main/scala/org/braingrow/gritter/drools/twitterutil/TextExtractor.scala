@@ -32,7 +32,9 @@ object TextExtractor {
       .filter(_.length() > 3)
       .filter(!ignored.contains(_))
       .distinct
-      .map(s => IdentifiableText(s, statusEvent.idStr))
+      .map(s => IdentifiableText(s, statusEvent.idStr)
+    )
+
   }
 
   def insertAllWordsAsIdentifiableAndFireRules(knowledgeSession: StatefulKnowledgeSession, statusEvent: StatusEvent, minChars: Int = 3) {

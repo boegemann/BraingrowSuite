@@ -44,7 +44,7 @@ class Top10 extends AccumulateFunction {
   def getResult(context: Serializable) = {
     context.asInstanceOf[Context].colAll.groupBy(_.text).toList.sortWith(
       // order by size unless they are the same size, then order alphabetical by word
-      (it1, it2) => if (it1._2.size == it2._2.size) it1._1.size < it2._1.size else it1._2.size > it2._2.size
+      (it1, it2) => if (it1._2.size == it2._2.size) it1._1 < it2._1 else it1._2.size > it2._2.size
     ).slice(0, 10)
   }
 

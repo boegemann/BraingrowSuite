@@ -7,7 +7,7 @@ import org.braingrow.server.{StaticClasspathContentRoot, BraingrowServer, Publis
 import org.braingrow.gritter.twitter.{StatusEvent, TwitterStreamListener}
 import org.braingrow.gritter.drools.{ActorBackedMessageNotifier, KnowledgeSessionFactory}
 import org.braingrow.gritter.drools.twitterutil.{TextExtractor, IdentifiableText}
-import net.liftweb.json.Serialization
+import java.lang.Object
 
 /**
  * User: ibogemann
@@ -22,6 +22,7 @@ object GritterWeb {
 
   def main(args: Array[String]) {
     val server = new BraingrowServer(8080);
+    val lock = new Object
     if (args.size != 2) {
       println("You need to start the application with a username and password for your Twitter account!")
     } else {
@@ -32,6 +33,8 @@ object GritterWeb {
       new StaticClasspathContentRoot("/gritter", "org/braingrow/gritterweb/static").start(server)
 
       val webSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws")).start()
+      val convertForPageActor = actorOf(new AdoptForPageActor(webSocketActor)).start()
+
       val droolsSession = KnowledgeSessionFactory.createKnowledgeSessionFromClassPathResource(
         "StatusEventRules.drl", Map(
           "notifier" -> new ActorBackedMessageNotifier(actorOf(new Actor {
@@ -39,19 +42,16 @@ object GritterWeb {
 
             def receive = {
               case list: List[(String, List[IdentifiableText])] =>
-                if (list != lastList) {
-                  println({
-                    self.mailboxSize + ":" + list.map(t => t._1 + ":" + t._2.size).mkString(",")
-                  })
-                  lastList = list
-                  webSocketActor ! Serialization.write(list.map(
-                    (t) => {
-                      Map("word" -> t._1, "count" -> t._2.size, "ids" -> t._2.map(_.statusId))
-                    }
-                  ))
+                // synchronized as we need to avoid two same lists sneaking through
+                lock.synchronized {
+                  if (list != lastList) {
+                    println({
+                      self.mailboxSize + ":" + list.map(t => t._1 + ":" + t._2.size).mkString(",")
+                    })
+                    convertForPageActor !(lastList, list);
+                    lastList = list
+                  }
                 }
-
-
             }
           }
           ).start())))

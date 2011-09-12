@@ -19,3 +19,25 @@
     width: 2000px;
 }
 
+.columnItem {
+    padding-left: 25px;
+}
+
+.down {
+    background-image:url('arrow_down.png');
+    background-repeat:no-repeat ;
+}
+.up {
+    background-image:url('arrow_up.png');
+    background-repeat:no-repeat ;
+}
+.new {
+    background-image:url('new.png');
+    background-repeat:no-repeat ;
+}
+
+.level {
+    background-image:url('stable.png');
+    background-repeat:no-repeat ;
+}
+

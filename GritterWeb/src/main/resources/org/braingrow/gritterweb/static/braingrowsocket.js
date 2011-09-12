@@ -15,10 +15,7 @@ var braingrowsocket = ( function() {
 	    + "ws"
 
 
-	var ws;
 
-   	function onWsOpen() {
-   	}
 
 	var colors = [
 	    "#7FFF00",
@@ -44,6 +41,7 @@ var braingrowsocket = ( function() {
         if (seconds < 10)
             seconds = "0" + seconds ;
         var data = $.parseJSON(msg.data) ;
+        console.log(data);
         var item =  {dateTime:hours + ":" + minutes + ":" + seconds, data:data} ;
 
         history.unshift(item);
@@ -70,6 +68,7 @@ var braingrowsocket = ( function() {
             for (var i=0,l=list.length;i<l;i++){
                 var curDiv = $(document.createElement("div"));
                 curDiv.addClass("columnItem");
+                curDiv.addClass(list[i].movement);
                 curDiv.append(document.createTextNode(list[i].word + " (" + list[i].count + ")"));
                 divCurList.append(curDiv);
             }
@@ -78,10 +77,46 @@ var braingrowsocket = ( function() {
         $("#historyTable").replaceWith(newTable);
     }
 
-	bg.startUp = function() {
+ 	var ws;
+
+    var openAttempts = 0;
+    var maxTries = 5;
+
+   	function onWsOpen() {
+        console.log("Web socket opened succesfully");
+   	    openAttempts = 0;
+   	}
+    function onClose(){
+        console.log("Web socket was closed");
+        console.log(arguments);
+        // as there might be lengthy pauses we need to reconnect when timed out.
+        // the maxTries regulates the attempts we do to avoid madness when the server is down .....
+        tryReconnect();
+    }
+
+    function onError(){
+        console.log("Web socket errored");
+        console.log(arguments);
+        tryReconnect();
+    }
+
+    function tryReconnect(){
+        if (openAttempts<maxTries){
+            connect();
+        }
+    }
+
+    function connect(){
+        openAttempts++;
 		var ws = new WebSocket(location, "braingrowsocket");
 		ws.onopen = onWsOpen;
 		ws.onmessage = onData;
+		ws.onclose = onClose;
+		ws.onerror = onError;
+    }
+
+	bg.startUp = function() {
+       connect();
 	};
 	return bg;
 }());
