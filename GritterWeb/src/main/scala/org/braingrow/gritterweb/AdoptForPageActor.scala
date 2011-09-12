@@ -29,7 +29,18 @@ class AdoptForPageActor(webSocketActor: ActorRef) extends Actor {
                 case _ => "level"
               }
             }
-            Map("word" -> word, "count" -> identifiables.size, "ids" -> identifiables.map(_.statusId), "movement" -> pos)
+            Map("word" -> word, "count" -> identifiables.size, "statusEvent" ->
+              identifiables.map(se =>
+                Map(
+                  "id" -> se.statusEvent.idStr,
+                  "username" -> se.statusEvent.user.name,
+                  "userUrl" -> se.statusEvent.user.url,
+                  "text" -> se.statusEvent.text,
+                  "userImage" -> se.statusEvent.user.profileImageUrl,
+                  "screenName" -> se.statusEvent.user.screenName
+                )
+
+              ), "movement" -> pos)
 
           }
         }

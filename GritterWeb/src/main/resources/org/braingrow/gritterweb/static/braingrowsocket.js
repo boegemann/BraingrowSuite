@@ -71,6 +71,30 @@ var braingrowsocket = ( function() {
                 curDiv.addClass(list[i].movement);
                 curDiv.append(document.createTextNode(list[i].word + " (" + list[i].count + ")"));
                 divCurList.append(curDiv);
+                curDiv.bind("click",list[i].statusEvent,function(evt){
+                    var tweets = evt.data;
+                    var newTweetList = $(document.createElement("div"));
+                    newTweetList.attr("id", "tweets");
+                    newTweetList.addClass("tweets");
+                    for (var cnt=0,cntTweets=tweets.length;cnt<cntTweets;cnt++){
+                        var curTweet =  $(document.createElement("div"));
+                        curTweet.addClass("tweet");
+                        var tweetImageLink =  $(document.createElement("a"));
+                        tweetImageLink.attr("href", "http://twitter.com/#!/" + tweets[cnt].screenName);
+                        tweetImageLink.attr("target", "_blank");
+                        var tweetImage = $(document.createElement("img"));
+                        tweetImage.attr("src", tweets[cnt].userImage);
+                        tweetImage.addClass("tweetImage");
+                        tweetImageLink.append(tweetImage);
+                        var tweetText = $(document.createElement("div"));
+                        tweetText.addClass("tweetText");
+                        tweetText.append(document.createTextNode(tweets[cnt].text));
+                        curTweet.append(tweetImageLink);
+                        curTweet.append(tweetText);
+                        newTweetList.append(curTweet);
+                    }
+                    $("#tweets").replaceWith(newTweetList);
+                })
             }
             newTable.append(divCurList);
         }

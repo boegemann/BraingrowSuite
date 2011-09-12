@@ -5,7 +5,6 @@
 
 .historyColumn {
     width:200px;
-    height:500px;;
     float: left;
 }
 
@@ -20,6 +19,7 @@
 }
 
 .columnItem {
+    cursor: pointer;
     padding-left: 25px;
 }
 
@@ -41,3 +41,29 @@
     background-repeat:no-repeat ;
 }
 
+.tweetImage {
+    width:50px;
+    height:50px;
+    float: left;
+}
+
+.tweetText {
+    height:50px;;
+    float: left;
+    padding-left:20px;
+}
+
+.tweets {
+    margin-left:50px;
+}
+
+.tweet {
+    clear: both;
+    padding-top: 10px;
+}
+
+.tweetText {
+    float: left;
+    height: 50px;
+    padding: 10px;
+}
