@@ -1,6 +1,36 @@
+.banner {
+    background: none repeat scroll 0 0 lightBlue;
+    height: 100px;
+    margin-bottom: 20px;
+}
+
+
+.bannerlogo {
+    float:left;
+    width:100px;
+    height:100px;
+}
+
+.bannertext {
+    float: left;
+    margin-left: 50px;
+    margin-top: 15px;
+}
+
+.title {
+    font-size:2em;
+    font-weight:bolder;
+}
+
+.subtitle {
+    font-size:1.2em;
+    font-weight:bolder;
+}
+
 .container {
-    width:100%;
-    height:500px;
+    margin: auto;
+    overflow: auto;
+    width: 98%;
 }
 
 .historyColumn {
@@ -14,8 +44,9 @@
 
 .historyTable {
     display: inline-block;
-    height: 300px;
     width: 2000px;
+    padding:10px;
+    background-color: #F0F0F0;
 }
 
 .columnItem {
@@ -54,10 +85,11 @@
 }
 
 .tweets {
-    margin-left:50px;
+    margin-top:20px;
 }
 
 .tweet {
+    margin-left:20px;
     clear: both;
     padding-top: 10px;
 }
@@ -67,3 +99,23 @@
     height: 50px;
     padding: 10px;
 }
+
+.sectiontitle {
+    font-size: 1.3em;
+    font-weight: bolder;
+    text-decoration: underline;
+}
+
+.tableheader {
+    margin-bottom:10px;
+}
+
+.icon {
+    position:relative;
+    top:5px;
+}
+
+.icondescription {
+    margin-right: 30px;
+}
+

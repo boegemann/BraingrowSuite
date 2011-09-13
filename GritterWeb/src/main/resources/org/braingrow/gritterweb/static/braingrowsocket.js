@@ -15,21 +15,6 @@ var braingrowsocket = ( function() {
 	    + "ws"
 
 
-
-
-	var colors = [
-	    "#7FFF00",
-	    "#6495ED",
-	    "#DC143C",
-	    "#00008B",
-	    "#00008B",
-	    "#00BFFF",
-	    "#9400D3",
-	    "#ADFF2F",
-	    "#ADD8E6",
-	    "#000000"
-	];
-
 	var history =[]
     function onData(msg) {
         var currentTime = new Date()
@@ -52,7 +37,6 @@ var braingrowsocket = ( function() {
     }
 
     function paint(){
-        console.log(history);
         var newTable = $(document.createElement("div"));
         newTable.attr("id", "historyTable");
         newTable.addClass("historyTable");
@@ -69,13 +53,22 @@ var braingrowsocket = ( function() {
                 var curDiv = $(document.createElement("div"));
                 curDiv.addClass("columnItem");
                 curDiv.addClass(list[i].movement);
+                var curWord = list[i].word;
                 curDiv.append(document.createTextNode(list[i].word + " (" + list[i].count + ")"));
                 divCurList.append(curDiv);
-                curDiv.bind("click",list[i].statusEvent,function(evt){
-                    var tweets = evt.data;
+                curDiv.bind("click",{word:curWord, list:list[i].statusEvent},function(evt){
+                    var word =  evt.data.word;
+                    var tweets = evt.data.list;
+
                     var newTweetList = $(document.createElement("div"));
                     newTweetList.attr("id", "tweets");
                     newTweetList.addClass("tweets");
+
+                    var tweetsHeader = $(document.createElement("div"));
+                    tweetsHeader.addClass("sectiontitle");
+                    tweetsHeader.append(document.createTextNode("Recorded tweets for '" + word + "':" ));
+                    newTweetList.append(tweetsHeader);
+
                     for (var cnt=0,cntTweets=tweets.length;cnt<cntTweets;cnt++){
                         var curTweet =  $(document.createElement("div"));
                         curTweet.addClass("tweet");

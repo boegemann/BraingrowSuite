@@ -19,7 +19,8 @@ class SplitTextActor(val nextStep: ActorRef) extends Actor {
     "really", "only", "lagi", "sama", "please", "follow", "need", "first", "here", "even", "live", "hate", "great", "super", "fuck",
     "after", "even", "them", "much", "someone", "dont", "besok", "life", "come", "real", "mais", "best", "over", "tweet", "juga",
     "como", "kamu", "jadi", "bisa", "minha", "banget", "been", "hoje", "tapi", "kita", "kalo", "shit", "nada", "casa", "miss", "pero",
-    "aqui", "than", "look", "tudo", "quem", "todos", "should", "agora", "quando", "porque", "their", "better", "check", "start"
+    "aqui", "than", "look", "tudo", "quem", "todos", "should", "agora", "quando", "porque", "their", "better", "check", "start",
+    "could", "done", "very", "around", "coming", "buenos", "ahora", "acha", "biar", "dias", "again", "yeah"
   )
 
 
