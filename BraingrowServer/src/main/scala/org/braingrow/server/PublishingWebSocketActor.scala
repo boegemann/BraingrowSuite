@@ -17,6 +17,7 @@ class PublishingWebSocketActor(server: BraingrowServer, path: String)
   protected def receive = {
     case s: String => {
       try {
+        println(">" + sockets.size())
         sockets.map(
           _.send(s)
         )
@@ -24,6 +25,10 @@ class PublishingWebSocketActor(server: BraingrowServer, path: String)
         case e: Exception => e.printStackTrace()
       }
     }
+  }
+
+  def postOpen(socket: Socket) {
+
   }
 
   class Socket extends WebSocket {
@@ -43,7 +48,9 @@ class PublishingWebSocketActor(server: BraingrowServer, path: String)
     def onOpen(connection: Connection) {
       _connection = connection
       sockets.add(this)
+      postOpen(this)
     }
+
   }
 
   def checkOrigin(request: HttpServletRequest, origin: String) = true

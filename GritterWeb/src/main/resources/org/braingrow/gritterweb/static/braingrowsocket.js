@@ -17,7 +17,8 @@ var braingrowsocket = ( function() {
 
 	var history =[]
     function onData(msg) {
-        var currentTime = new Date()
+        var data = $.parseJSON(msg.data) ;
+        var currentTime = new Date(data.dateTime);
         var hours = currentTime.getHours()
         var minutes = currentTime.getMinutes()
         var seconds = currentTime.getSeconds()
@@ -25,9 +26,8 @@ var braingrowsocket = ( function() {
             minutes = "0" + minutes ;
         if (seconds < 10)
             seconds = "0" + seconds ;
-        var data = $.parseJSON(msg.data) ;
         console.log(data);
-        var item =  {dateTime:hours + ":" + minutes + ":" + seconds, data:data} ;
+        var item =  {dateTime:hours + ":" + minutes + ":" + seconds, data:data.list} ;
 
         history.unshift(item);
         if (history.length>10){
@@ -81,7 +81,20 @@ var braingrowsocket = ( function() {
                         tweetImageLink.append(tweetImage);
                         var tweetText = $(document.createElement("div"));
                         tweetText.addClass("tweetText");
-                        tweetText.append(document.createTextNode(tweets[cnt].text));
+
+                        var tweetNameLink =  $(document.createElement("a"));
+                        tweetNameLink.attr("href", "http://twitter.com/#!/" + tweets[cnt].screenName);
+                        tweetNameLink.attr("target", "_blank");
+                        tweetNameLink.append(document.createTextNode(tweets[cnt].screenName  + " says:"));
+                        tweetText.append(tweetNameLink);
+                        tweetText.append(document.createElement("br"));
+
+
+                        var tweetNameLink =  $(document.createElement("a"));
+                        tweetNameLink.attr("href", "http://twitter.com/#!/" + tweets[cnt].screenName + "/status/" + tweets[cnt].id);
+                        tweetNameLink.attr("target", "_blank");
+                        tweetNameLink.append(document.createTextNode(tweets[cnt].text));
+                        tweetText.append(tweetNameLink);
                         curTweet.append(tweetImageLink);
                         curTweet.append(tweetText);
                         newTweetList.append(curTweet);
@@ -101,35 +114,42 @@ var braingrowsocket = ( function() {
 
    	function onWsOpen() {
         console.log("Web socket opened succesfully");
+        status="CONNECTED";
    	    openAttempts = 0;
    	}
     function onClose(){
         console.log("Web socket was closed");
+        status="CLOSED";
         console.log(arguments);
+        if (status=="CONNECTED"){
+            openAttempts = 0;
+        }
         // as there might be lengthy pauses we need to reconnect when timed out.
         // the maxTries regulates the attempts we do to avoid madness when the server is down .....
-        tryReconnect();
+        window.setTimeout(connect,1000*openAttempts)
     }
 
-    function onError(){
-        console.log("Web socket errored");
-        console.log(arguments);
-        tryReconnect();
+    function onError(e){
+        console.log(["Web socket errored!",e]);
     }
 
-    function tryReconnect(){
-        if (openAttempts<maxTries){
-            connect();
-        }
-    }
+    var ws;
+    var status = "CLOSED";
 
     function connect(){
-        openAttempts++;
-		var ws = new WebSocket(location, "braingrowsocket");
-		ws.onopen = onWsOpen;
-		ws.onmessage = onData;
-		ws.onclose = onClose;
-		ws.onerror = onError;
+        if (openAttempts<maxTries){
+            openAttempts++;
+            status = "CONNECTING";
+            try {
+                ws = new WebSocket(location, "braingrowsocket")
+                ws.onopen = onWsOpen;
+                ws.onmessage = onData;
+                ws.onclose = onClose;
+                ws.onerror = onError;
+            }catch (e){
+                console.log("Error caught during connection attempt - Server is probably down");
+            };
+		}
     }
 
 	bg.startUp = function() {
@@ -139,6 +159,8 @@ var braingrowsocket = ( function() {
 }());
 
 $(document).ready(function() {
+	$( "#tabs" ).tabs();
+
 	if(!window.WebSocket) {
 		window.WebSocket = window.MozWebSocket;
 		if(!window.WebSocket)

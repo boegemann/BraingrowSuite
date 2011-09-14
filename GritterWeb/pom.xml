@@ -23,19 +23,24 @@
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.9.0</artifactId>
+            <artifactId>scalatest_${scala.version}</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>${groupId}</groupId>
+            <groupId>net.liftweb</groupId>
+            <artifactId>lift-json_${scala.version}</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>BraingrowServer</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>Gritter</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

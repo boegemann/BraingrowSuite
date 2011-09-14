@@ -1,10 +1,8 @@
 .banner {
-    background: none repeat scroll 0 0 lightBlue;
+    background: url("jquery_theme/custom-theme/images/ui-bg_highlight-soft_100_deedf7_1x100.png") repeat-x scroll 50% 50% #DEEDF7;
     height: 100px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
-
-
 .bannerlogo {
     float:left;
     width:100px;
@@ -89,8 +87,9 @@
 }
 
 .tweet {
-    margin-left:20px;
     clear: both;
+    display: table;
+    margin-left: 20px;
     padding-top: 10px;
 }
 
@@ -118,4 +117,3 @@
 .icondescription {
     margin-right: 30px;
 }
-

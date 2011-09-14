@@ -11,7 +11,7 @@
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
         <encoding>UTF-8</encoding>
-        <scala.version>2.9.0-1</scala.version>
+        <scala.version>2.9.1</scala.version>
         <jetty-version>7.5.0.RC1</jetty-version>
     </properties>
 
@@ -30,7 +30,7 @@
             </dependency>
             <dependency>
                 <groupId>org.scalatest</groupId>
-                <artifactId>scalatest_2.9.0</artifactId>
+                <artifactId>scalatest_${scala.version}</artifactId>
                 <version>1.6.1</version>
                 <scope>test</scope>
             </dependency>
@@ -42,17 +42,23 @@
             </dependency>
             <dependency>
                 <groupId>net.databinder</groupId>
-                <artifactId>dispatch-http_2.9.0-1</artifactId>
+                <artifactId>dispatch-http_${scala.version}</artifactId>
                 <version>0.8.5</version>
             </dependency>
             <dependency>
                 <groupId>net.databinder</groupId>
-                <artifactId>dispatch-lift-json_2.9.0-1</artifactId>
+                <artifactId>dispatch-lift-json_${scala.version}</artifactId>
                 <version>0.8.5</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>net.liftweb</groupId>
+                        <artifactId>lift-json_2.9.0-1</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>net.databinder</groupId>
-                <artifactId>dispatch-json_2.9.0-1</artifactId>
+                <artifactId>dispatch-json_${scala.version}</artifactId>
                 <version>0.8.5</version>
             </dependency>
             <dependency>
@@ -81,11 +87,6 @@
                 <version>2.0EA3</version>
             </dependency>
             <dependency>
-                <groupId>net.debasishg</groupId>
-                <artifactId>sjson_2.9.0</artifactId>
-                <version>0.12</version>
-            </dependency>
-            <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-websocket</artifactId>
                 <version>${jetty-version}</version>
@@ -100,8 +101,8 @@
 
             <dependency>
                 <groupId>net.liftweb</groupId>
-                <artifactId>lift-json_2.9.0-1</artifactId>
-                <version>2.4-M3</version>
+                <artifactId>lift-json_${scala.version}</artifactId>
+                <version>2.4-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

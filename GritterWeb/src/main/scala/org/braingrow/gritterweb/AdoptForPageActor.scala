@@ -11,7 +11,7 @@ import java.lang.Object
  * Time: 10:57
  */
 
-class AdoptForPageActor(webSocketActor: ActorRef) extends Actor {
+class AdoptForPageActor(webSocketActor: ActorRef, historyManager: ListHistoryManager) extends Actor {
   implicit val formats = net.liftweb.json.DefaultFormats
 
   private var oldList = List[(String, List[IdentifiableText])]()
@@ -21,15 +21,26 @@ class AdoptForPageActor(webSocketActor: ActorRef) extends Actor {
 
     case newList: List[(String, List[IdentifiableText])] =>
       // synchronized as we need to avoid two same lists sneaking through
-      lock.synchronized {
-        if (newList != oldList) {
-          println({
-            self.mailboxSize + ":" + newList.map(t => t._1 + ":" + t._2.size).mkString(",")
-          })
-          val orderedOldWords = oldList.map(_._1)
+
+      val orderedList = lock.synchronized {
+        if (newList == oldList) {
+          None
+        } else {
+          val l = Some(oldList.map(_._1))
           oldList = newList
-          webSocketActor ! Serialization.write(
-            newList.view.zipWithIndex.map {
+          l
+        }
+      }
+
+      if (orderedList != None) {
+        println({
+          self.mailboxSize + ":" + newList.map(t => t._1 + ":" + t._2.size).mkString(",")
+        })
+        val orderedOldWords = orderedList.get
+        val message = Serialization.write(
+          Map(
+            "dateTime" -> System.currentTimeMillis(),
+            "list" -> newList.view.zipWithIndex.map {
               case ((word, identifiables), index) => {
                 val indexInOld = orderedOldWords.indexOf(word)
                 // determine whether the current item rose,fell or is new in top ten since the last list
@@ -58,9 +69,13 @@ class AdoptForPageActor(webSocketActor: ActorRef) extends Actor {
                   ), "movement" -> pos)
 
               }
-            }
+            }.toList
           )
-        }
+        )
+
+        webSocketActor ! message
+        historyManager.notifyList(message)
+
       }
   }
 }

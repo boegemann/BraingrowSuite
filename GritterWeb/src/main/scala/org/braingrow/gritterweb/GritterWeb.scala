@@ -28,13 +28,22 @@ object GritterWeb {
 
       // add our various contexts to the server
       new StaticClasspathContentRoot("/gritter", "org/braingrow/gritterweb/static").start(server)
-      val webSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws")).start()
+
+
+      val historyManager = new ListHistoryManager(10);
+      val webSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws") {
+        override def postOpen(socket: this.type#Socket) {
+          historyManager.getHistory.foreach(
+            socket.send(_)
+          )
+        }
+      }).start()
 
       // The 'ActorBackedMessageNotifier' is an utility class to allow us to send messages
       // to an actor from within a Drools ruleset
       // In this case we add our AdoptForPageActor as an ActorRef in - Purpose of this actor is to take the
       // notification from drools and filter and 'massage' them to the correct json expected by the javascript in our page
-      val notifier = new ActorBackedMessageNotifier(actorOf(new AdoptForPageActor(webSocketActor)).start())
+      val notifier = new ActorBackedMessageNotifier(actorOf(new AdoptForPageActor(webSocketActor, historyManager)).start())
 
       // We can now create our drools session and pass the notifier in
       val droolsSession = KnowledgeSessionFactory.createKnowledgeSessionFromClassPathResource(

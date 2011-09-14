@@ -4,10 +4,10 @@
         Gritter
     </title>
     <link type="text/css" href="gritter.css" rel="Stylesheet"/>
+    <link type="text/css" href="jquery_theme/custom-theme/jquery-ui-1.8.16.custom.css" rel="Stylesheet"/>
 
     <script type='text/javascript' src="jquery.js"></script>
-    <script type='text/javascript' src="raphael-min.js"></script>
-    <script type='text/javascript' src="elycharts.js"></script>
+    <script type='text/javascript' src="jquery-ui-1.8.16.custom.min.js"></script>
     <script type='text/javascript' src="braingrowsocket.js"></script>
 </head>
 <body>
@@ -19,25 +19,39 @@
         <div class="subtitle">Analysing the Twitter Stream</div>
     </div>
 </div>
-<div class="tableheader">
-    <div>
-        <span class="sectiontitle">Top 10 words in current Twitter stream:</span>
-    </div>
-    <div>
-        <img src="stable.png" class="icon" alt="No Change"/><span class="icondescription">No Change</span>
-        <img src="arrow_up.png" class="icon" alt="Arrow up"/><span class="icondescription">Word position rose</span>
-        <img src="new.png" class="icon" alt="Thick arrow up"/><span class="icondescription">New in Top 10</span>
-        <img src="arrow_down.png" class="icon" alt="Arrow down"/><span class="icondescription">Word position fell</span>
-    </div>
-</div>
-<div id="container" class="container">
-    <div id="historyTable">
-        Waiting for next change to be transmitted.<br/> Please be patient ...
-    </div>
 
-</div>
-<div id="tweets">
+<div id="tabs">
 
+    <ul>
+        <li><a href="#tabs-1">Top 10 words</a></li>
+        <li><a href="#tabs-2">Tweets by Timezone</a></li>
+    </ul>
+
+    <div id="tabs-1">
+        <div class="tableheader">
+
+            <div>
+                <img src="stable.png" class="icon" alt="No Change"/><span class="icondescription">No Change</span>
+                <img src="arrow_up.png" class="icon" alt="Arrow up"/><span
+                    class="icondescription">Word position rose</span>
+                <img src="new.png" class="icon" alt="Thick arrow up"/><span class="icondescription">New in Top 10</span>
+                <img src="arrow_down.png" class="icon" alt="Arrow down"/><span
+                    class="icondescription">Word position fell</span>
+            </div>
+        </div>
+        <div id="container" class="container">
+            <div id="historyTable">
+                Waiting for next change to be transmitted.<br/> Please be patient ...
+            </div>
+
+        </div>
+        <div id="tweets">
+
+        </div>
+    </div>
+    <div id="tabs-2">
+        <h1>Next to be done .....</h1>
+    </div>
 </div>
 </body>
 </html>
