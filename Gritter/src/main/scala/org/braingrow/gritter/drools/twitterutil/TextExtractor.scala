@@ -42,4 +42,10 @@ object TextExtractor {
     knowledgeSession.fireAllRules()
   }
 
+  def insertTimezoneAndFireRules(knowledgeSession: StatefulKnowledgeSession, statusEvent: StatusEvent, minChars: Int = 3) {
+    knowledgeSession.insert(statusEvent.user.timeZone)
+    knowledgeSession.fireAllRules()
+  }
+
+
 }

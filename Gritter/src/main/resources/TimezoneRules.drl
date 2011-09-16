@@ -8,15 +8,15 @@ import java.util.ArrayList
 
 global org.braingrow.gritter.drools.ActorBackedMessageNotifier notifier;
 
-declare IdentifiableText
+declare String
    @role(event)
 end
 
 rule "Collect Words"
    dialect "mvel"
    when
-    $idText:IdentifiableText()
-    $list: ArrayList() from accumulate($it:IdentifiableText() over window:time(60m),top10Words($it))
+    $timeZone:String()
+    $list: ArrayList() from accumulate($tz:String() over window:time(60m),top10Timezones($tz))
    then
     notifier.onMessage($list);
 end

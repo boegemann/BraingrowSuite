@@ -19,7 +19,7 @@ class AdoptForPageActor(webSocketActor: ActorRef, historyManager: ListHistoryMan
 
   def receive = {
 
-    case newList: List[(String, List[IdentifiableText])] =>
+    case newList: List[(String, List[IdentifiableText])] => {
       // synchronized as we need to avoid two same lists sneaking through
 
       val orderedList = lock.synchronized {
@@ -77,5 +77,6 @@ class AdoptForPageActor(webSocketActor: ActorRef, historyManager: ListHistoryMan
         historyManager.notifyList(message)
 
       }
+    }
   }
 }

@@ -23,7 +23,6 @@ object KnowledgeSessionFactory {
 
     val config = KnowledgeBaseFactory.newKnowledgeBaseConfiguration();
     config.setOption(EventProcessingOption.STREAM)
-    config.setProperty("drools.accumulate.function.top10", "org.braingrow.gritter.drools.Top10")
 
     // Create a new knowledgebase
     val kbase: KnowledgeBase = KnowledgeBaseFactory.newKnowledgeBase(config)

@@ -43,12 +43,23 @@ object GritterWeb {
       // to an actor from within a Drools ruleset
       // In this case we add our AdoptForPageActor as an ActorRef in - Purpose of this actor is to take the
       // notification from drools and filter and 'massage' them to the correct json expected by the javascript in our page
-      val notifier = new ActorBackedMessageNotifier(actorOf(new AdoptForPageActor(webSocketActor, historyManager)).start())
+      val WordNotifier = new ActorBackedMessageNotifier(actorOf(new AdoptForPageActor(webSocketActor, historyManager)).start())
+      val TimeZoneNotifier = new ActorBackedMessageNotifier(actorOf(new Actor {
+        protected def receive = {
+          case l: List[(String, Int)] => println(l)
+        }
+      }).start())
 
       // We can now create our drools session and pass the notifier in
-      val droolsSession = KnowledgeSessionFactory.createKnowledgeSessionFromClassPathResource(
+      val droolsWordAnalysisSession = KnowledgeSessionFactory.createKnowledgeSessionFromClassPathResource(
         "StatusEventRules.drl", Map(
-          "notifier" -> notifier
+          "notifier" -> WordNotifier
+        )
+      )
+
+      val droolsTimezoneAnalysisSession = KnowledgeSessionFactory.createKnowledgeSessionFromClassPathResource(
+        "TimezoneRules.drl", Map(
+          "notifier" -> TimeZoneNotifier
         )
       )
 
@@ -58,7 +69,8 @@ object GritterWeb {
       new TwitterStreamListener().startListener(s, actorOf(new Actor {
         def receive = {
           case s: StatusEvent =>
-            TextExtractor.insertAllWordsAsIdentifiableAndFireRules(droolsSession, s, 3)
+            TextExtractor.insertAllWordsAsIdentifiableAndFireRules(droolsWordAnalysisSession, s, 3)
+            TextExtractor.insertTimezoneAndFireRules(droolsTimezoneAnalysisSession, s, 3)
         }
       }).start())
     }
