@@ -22,4 +22,5 @@ class Top10TimezoneAccumulateFunction extends AbstractCollectingAccumulateFuncti
     }).slice(0, 10)
   }
 
+  def getResultType = classOf[List[(String, Int)]]
 }

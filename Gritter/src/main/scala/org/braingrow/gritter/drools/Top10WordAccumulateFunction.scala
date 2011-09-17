@@ -24,4 +24,5 @@ class Top10WordAccumulateFunction extends AbstractCollectingAccumulateFunction {
     }).slice(0, 10)
   }
 
+  def getResultType = classOf[List[(String, List[IdentifiableText])]]
 }
