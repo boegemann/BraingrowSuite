@@ -30,7 +30,7 @@ object GritterWeb {
       new StaticClasspathContentRoot("/gritter", "org/braingrow/gritterweb/static").start(server)
 
 
-      val historyManager = new ListHistoryManager(10);
+      val historyManager = new MessageHistoryManager[String](10);
       val webSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws") {
         override def postOpen(socket: this.type#Socket) {
           historyManager.getHistory.foreach(
