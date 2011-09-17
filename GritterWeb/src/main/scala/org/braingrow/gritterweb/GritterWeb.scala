@@ -41,9 +41,9 @@ object GritterWeb {
 
       // The 'ActorBackedMessageNotifier' is an utility class to allow us to send messages
       // to an actor from within a Drools ruleset
-      // In this case we add our AdoptForPageActor as an ActorRef in - Purpose of this actor is to take the
+      // In this case we add our AdoptWordlistForPageActor as an ActorRef in - Purpose of this actor is to take the
       // notification from drools and filter and 'massage' them to the correct json expected by the javascript in our page
-      val WordNotifier = new ActorBackedMessageNotifier(actorOf(new AdoptForPageActor(webSocketActor, historyManager)).start())
+      val WordNotifier = new ActorBackedMessageNotifier(actorOf(new AdoptWordlistForPageActor(webSocketActor, historyManager)).start())
       val TimeZoneNotifier = new ActorBackedMessageNotifier(actorOf(new Actor {
         protected def receive = {
           case l: List[(String, Int)] => println(l)

@@ -8,15 +8,12 @@ import akka.actor.{ActorRef, Actor}
 abstract class AbstractDublettenFilteringSortedListPageAdapter[T](webSocketActor: ActorRef, historyManager: MessageHistoryManager[String]) extends Actor {
   implicit val formats = net.liftweb.json.DefaultFormats
 
-  private var oldList = List[(String, List[T])]()
+  private var oldList = List[(String, T)]()
   private var lock = new Object()
 
-  def createPageMessage(word: String, list: scala.List[T], pos: String): Map[String, Any]
+  def createPageMessage(word: String, list: T, pos: String): Map[String, Any]
 
-  def createMessage(newList: scala.List[(String, scala.List[T])], orderedOldWords: List[String]): Map[String, Any] = {
-    println({
-      self.mailboxSize + ":" + newList.map(t => t._1 + ":" + t._2.size).mkString(",")
-    })
+  def createMessage(newList: scala.List[(String, T)], orderedOldWords: List[String]): Map[String, Any] = {
 
     val result = Map(
       "dateTime" -> System.currentTimeMillis(),
@@ -32,9 +29,6 @@ abstract class AbstractDublettenFilteringSortedListPageAdapter[T](webSocketActor
               case _ => "level"
             }
           }
-          // now create a Map containing the current word, all the information required from the
-          // related status events, and its relative position so it can be serialised into the
-          // json object for the client
           createPageMessage (item,list,pos)
 
         }
@@ -45,7 +39,7 @@ abstract class AbstractDublettenFilteringSortedListPageAdapter[T](webSocketActor
 
   def receive = {
 
-    case newList: List[(String, List[T])] => {
+    case newList: List[(String, T)] => {
       // synchronized as we need to avoid two same lists sneaking through
 
       val listOption = lock.synchronized {
