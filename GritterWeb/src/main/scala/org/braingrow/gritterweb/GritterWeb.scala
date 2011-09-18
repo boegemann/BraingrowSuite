@@ -30,12 +30,28 @@ object GritterWeb {
       new StaticClasspathContentRoot("/gritter", "org/braingrow/gritterweb/static").start(server)
 
 
-      val historyManager = new MessageHistoryManager[String](10);
-      val webSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws") {
+      val wordHistoryManager = new MessageHistoryManager[String](10);
+      val wordListSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws/words") {
         override def postOpen(socket: this.type#Socket) {
-          historyManager.getHistory.foreach(
+          wordHistoryManager.getHistory.foreach(
             socket.send(_)
           )
+        }
+      }).start()
+
+       val timeZoneListHistoryManager = new MessageHistoryManager[String](10);
+       val timeZoneListSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws/timezones") {
+        override def postOpen(socket: this.type#Socket) {
+          timeZoneListHistoryManager.getHistory.foreach(
+            socket.send(_)
+          )
+        }
+      }).start()
+
+
+      val loggerActor = actorOf(new Actor(){
+        protected def receive = {
+          case json:String => println(json)
         }
       }).start()
 
@@ -43,12 +59,9 @@ object GritterWeb {
       // to an actor from within a Drools ruleset
       // In this case we add our AdoptWordlistForPageActor as an ActorRef in - Purpose of this actor is to take the
       // notification from drools and filter and 'massage' them to the correct json expected by the javascript in our page
-      val WordNotifier = new ActorBackedMessageNotifier(actorOf(new AdoptWordlistForPageActor(webSocketActor, historyManager)).start())
-      val TimeZoneNotifier = new ActorBackedMessageNotifier(actorOf(new Actor {
-        protected def receive = {
-          case l: List[(String, Int)] => println(l)
-        }
-      }).start())
+      val WordNotifier = new ActorBackedMessageNotifier(actorOf(new AdoptWordlistForPageActor(wordListSocketActor, wordHistoryManager)).start())
+      val TimeZoneNotifier = new ActorBackedMessageNotifier(actorOf(new AdoptTimezonelistForPageActor(loggerActor, timeZoneListHistoryManager)).start())
+
 
       // We can now create our drools session and pass the notifier in
       val droolsWordAnalysisSession = KnowledgeSessionFactory.createKnowledgeSessionFromClassPathResource(

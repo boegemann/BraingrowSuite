@@ -12,7 +12,7 @@ var braingrowsocket = ( function() {
 	    .replace('http://', 'ws://')
 	    .replace('https://', 'wss://')
 	    .replace("index.html","")
-	    + "ws"
+	    + "ws/words"
 
 
 	var history =[]

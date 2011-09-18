@@ -16,7 +16,7 @@ class AdoptWordlistForPageActor(webSocketActor: ActorRef, historyManager: Messag
   extends AbstractDublettenFilteringSortedListPageAdapter[List[IdentifiableText]](webSocketActor,historyManager) {
 
 
-  def createPageMessage(word: String, identifiables: scala.List[IdentifiableText], pos: String): Map[String, Any] = {
+  def createPageMessage(word: String, identifiables: List[IdentifiableText], pos: String): Map[String, Any] = {
     Map("word" -> word, "count" -> identifiables.size, "statusEvent" ->
       identifiables.map(se =>
         Map(
