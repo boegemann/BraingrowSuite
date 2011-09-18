@@ -5,7 +5,9 @@ import net.liftweb.json.Serialization
 import akka.actor.{ActorRef, Actor}
 
 
-abstract class AbstractDublettenFilteringSortedListPageAdapter[T](webSocketActor: ActorRef, historyManager: MessageHistoryManager[String]) extends Actor {
+abstract class AbstractDublettenFilteringSortedListPageAdapter[T](webSocketActor: ActorRef, historyManager: MessageHistoryManager[String])
+  extends Actor {
+
   implicit val formats = net.liftweb.json.DefaultFormats
 
   private var oldList = List[(String, T)]()
@@ -29,7 +31,7 @@ abstract class AbstractDublettenFilteringSortedListPageAdapter[T](webSocketActor
               case _ => "level"
             }
           }
-          createPageMessage (item,list,pos)
+          createPageMessage(item, list, pos)
 
         }
       }.toList

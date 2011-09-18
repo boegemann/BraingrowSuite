@@ -22,6 +22,9 @@ class MessageHistoryManager[T](historySize: Int) {
   }
 
   def getHistory = {
-    history.toList
+    lock.synchronized {
+      history.toList
+    }
   }
+
 }
