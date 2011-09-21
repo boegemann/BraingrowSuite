@@ -17,10 +17,12 @@ class PublishingWebSocketActor(server: BraingrowServer, path: String)
   protected def receive = {
     case s: String => {
       try {
-        println(">" + sockets.size())
-        sockets.map(
+        if (s.trim().equals("")) {
+          println("Gotcha bugger!")
+        }
+        sockets.map{
           _.send(s)
-        )
+        }
       } catch {
         case e: Exception => e.printStackTrace()
       }

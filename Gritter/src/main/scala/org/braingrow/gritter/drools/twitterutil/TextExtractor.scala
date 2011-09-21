@@ -25,7 +25,7 @@ object TextExtractor {
   )
 
   def extractAllWordsAsIdentifiableText(statusEvent: StatusEvent, minChars: Int = 3): Traversable[IdentifiableText] = {
-    if (statusEvent.text.contains("people")) println("People")
+
     statusEvent.text.replaceAll("[^A-Za-z ]", " ")
       .split(' ')
       .map(_.toLowerCase.trim)

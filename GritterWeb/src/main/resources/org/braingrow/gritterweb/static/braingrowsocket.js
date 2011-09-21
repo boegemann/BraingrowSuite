@@ -1,41 +1,4 @@
-var braingrowsocket = ( function() {
-	var bg = {}
-
-	var dataHolder = {};
-
-	function exists(value) {
-		var notExists;
-		return (value !== notExists && value !== null);
-	}
-
-	var location = document.location.toString()
-	    .replace('http://', 'ws://')
-	    .replace('https://', 'wss://')
-	    .replace("index.html","")
-	    + "ws/words"
-
-
-	var history =[]
-    function onData(msg) {
-        var data = $.parseJSON(msg.data) ;
-        var currentTime = new Date(data.dateTime);
-        var hours = currentTime.getHours()
-        var minutes = currentTime.getMinutes()
-        var seconds = currentTime.getSeconds()
-        if (minutes < 10)
-            minutes = "0" + minutes ;
-        if (seconds < 10)
-            seconds = "0" + seconds ;
-        console.log(data);
-        var item =  {dateTime:hours + ":" + minutes + ":" + seconds, data:data.list} ;
-
-        history.unshift(item);
-        if (history.length>10){
-            history.pop();
-        }
-        paint();
-    }
-
+var wordListSocket = ( function() {
     function paint(){
         var newTable = $(document.createElement("div"));
         newTable.attr("id", "historyTable");
@@ -107,55 +70,31 @@ var braingrowsocket = ( function() {
         $("#historyTable").replaceWith(newTable);
     }
 
- 	var ws;
+	var history =[];
+    function onData(msg) {
+        var data = $.parseJSON(msg.data) ;
+        var currentTime = new Date(data.dateTime);
+        var hours = currentTime.getHours()
+        var minutes = currentTime.getMinutes()
+        var seconds = currentTime.getSeconds()
+        if (minutes < 10)
+            minutes = "0" + minutes ;
+        if (seconds < 10)
+            seconds = "0" + seconds ;
+        var item =  {"dt":data.dateTime, dateTime:hours + ":" + minutes + ":" + seconds, data:data.list} ;
 
-    var openAttempts = 0;
-    var maxTries = 5;
-
-   	function onWsOpen() {
-        console.log("Web socket opened succesfully");
-        status="CONNECTED";
-   	    openAttempts = 0;
-   	}
-    function onClose(){
-        console.log("Web socket was closed");
-        status="CLOSED";
-        console.log(arguments);
-        if (status=="CONNECTED"){
-            openAttempts = 0;
+        history.unshift(item);
+        if (history.length>10){
+            history.pop();
         }
-        // as there might be lengthy pauses we need to reconnect when timed out.
-        // the maxTries regulates the attempts we do to avoid madness when the server is down .....
-        window.setTimeout(connect,1000*openAttempts)
+        paint();
     }
 
-    function onError(e){
-        console.log(["Web socket errored!",e]);
-    }
-
-    var ws;
-    var status = "CLOSED";
-
-    function connect(){
-        if (openAttempts<maxTries){
-            openAttempts++;
-            status = "CONNECTING";
-            try {
-                ws = new WebSocket(location, "braingrowsocket")
-                ws.onopen = onWsOpen;
-                ws.onmessage = onData;
-                ws.onclose = onClose;
-                ws.onerror = onError;
-            }catch (e){
-                console.log("Error caught during connection attempt - Server is probably down");
-            };
-		}
-    }
-
-	bg.startUp = function() {
-       connect();
-	};
-	return bg;
+	socket = $().createReconnectingWebSocket({
+	    onData:onData,
+	    relativePath:"ws/words"
+	})
+	return socket;
 }());
 
 $(document).ready(function() {
@@ -166,5 +105,5 @@ $(document).ready(function() {
 		if(!window.WebSocket)
 			alert("WebSocket not supported by this browser");
 	}
-	braingrowsocket.startUp();
+	wordListSocket.startUp();
 });

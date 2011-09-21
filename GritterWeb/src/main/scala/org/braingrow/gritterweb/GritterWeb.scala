@@ -33,14 +33,21 @@ object GritterWeb {
       val wordHistoryManager = new MessageHistoryManager[String](10);
       val wordListSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws/words") {
         override def postOpen(socket: this.type#Socket) {
-          wordHistoryManager.getHistory.foreach(
-            socket.send(_)
-          )
+          wordHistoryManager.getHistory.foreach(s => {
+            println("==============================")
+            if (s.trim()==""){
+              println("Bugger")
+            }
+            println(s)
+            println("==============================")
+            socket.send(s)
+          })
+
         }
       }).start()
 
-       val timeZoneListHistoryManager = new MessageHistoryManager[String](10);
-       val timeZoneListSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws/timezones") {
+      val timeZoneListHistoryManager = new MessageHistoryManager[String](10);
+      val timeZoneListSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws/timezones") {
         override def postOpen(socket: this.type#Socket) {
           timeZoneListHistoryManager.getHistory.foreach(
             socket.send(_)
@@ -49,9 +56,9 @@ object GritterWeb {
       }).start()
 
 
-      val loggerActor = actorOf(new Actor(){
+      val loggerActor = actorOf(new Actor() {
         protected def receive = {
-          case json:String => println(json)
+          case json: String => {} //println(json)
         }
       }).start()
 
