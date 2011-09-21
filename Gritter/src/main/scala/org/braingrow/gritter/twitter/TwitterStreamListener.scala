@@ -20,7 +20,7 @@ class TwitterStreamListener {
           import java.io._
           println("start")
           val reader: BufferedReader = new BufferedReader(new InputStreamReader(stm, charset))
-          var line = reader.readLine()
+          var line = reader.readLine().replaceAll("\0","")
           while (line != null) {
             try {
               line = reader.readLine()
