@@ -108,7 +108,7 @@ var timeZoneSocket = ( function() {
             divCurList.addClass("historyColumn");
             var divHeader = $(document.createElement("div"));
             divHeader.addClass("columnItem columnHeader");
-            divHeader.append(document.createTextNode(curHistoryItem.dateTime))
+            divHeader.append(document.createTextNode(curHistoryItem.dateTime + " (" + curHistoryItem.total +")"))
             divCurList.append(divHeader);
             var list = curHistoryItem.data;
             for (var i=0,l=list.length;i<l;i++){
@@ -116,7 +116,7 @@ var timeZoneSocket = ( function() {
                 curDiv.addClass("columnItem");
                 curDiv.addClass(list[i].movement);
                 var curWord = list[i].word;
-                curDiv.append(document.createTextNode(list[i].word + " (" + list[i].count + ")"));
+                curDiv.append(document.createTextNode(list[i].word + " (" + list[i].count + " - " + Math.round((list[i].count/curHistoryItem.total)*100) + "%)"));
                 divCurList.append(curDiv);
             }
             newTable.append(divCurList);
@@ -135,7 +135,8 @@ var timeZoneSocket = ( function() {
             minutes = "0" + minutes ;
         if (seconds < 10)
             seconds = "0" + seconds ;
-        var item =  {"dt":data.dateTime, dateTime:hours + ":" + minutes + ":" + seconds, data:data.list} ;
+        var item =  {"dt":data.dateTime,"total":data.total, dateTime:hours + ":" + minutes + ":" + seconds, data:data.list} ;
+
 
         history.unshift(item);
         if (history.length>10){

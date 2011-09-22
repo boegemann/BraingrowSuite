@@ -1,6 +1,5 @@
 package org.braingrow.gritterweb
 
-import org.braingrow.gritter.drools.twitterutil.IdentifiableText
 import net.liftweb.json.Serialization
 import akka.actor.{ActorRef, Actor}
 
@@ -10,12 +9,13 @@ abstract class AbstractDublettenFilteringSortedListPageAdapter[T](webSocketActor
 
   implicit val formats = net.liftweb.json.DefaultFormats
 
-  private var oldList = List[(String, T)]()
+  private var getOrderedOldListOptionFromList = List[(String, T)]()
+  private var oldMap = Map[String, Object]("list" -> List[(String, T)]())
   private var lock = new Object()
 
   def createPageMessage(word: String, list: T, pos: String): Map[String, Any]
 
-  def createMessage(newList: scala.List[(String, T)], orderedOldWords: List[String]): Map[String, Any] = {
+  def createListMap(newList: scala.List[(String, T)], orderedOldWords: List[String]): Map[String, Any] = {
 
     val result = Map(
       "dateTime" -> System.currentTimeMillis(),
@@ -39,28 +39,53 @@ abstract class AbstractDublettenFilteringSortedListPageAdapter[T](webSocketActor
     result
   }
 
+  def getOrderedOldListOptionFromList(newList: scala.List[(String, T)]): Option[List[String]] = {
+    lock.synchronized {
+      if (newList == getOrderedOldListOptionFromList) {
+        None
+      } else {
+        val l = Some(getOrderedOldListOptionFromList.map(_._1))
+        getOrderedOldListOptionFromList = newList
+        l
+      }
+    }
+  }
+
+  def writeMessage(result: Map[String, Any]) {
+    val message = Serialization.write(result)
+    historyManager.notifyMessage(message)
+    webSocketActor ! message
+  }
+
   def receive = {
+
+    case newMap: Map[String, Object] => {
+      val orderedOldListOption = lock.synchronized {
+        if (newMap == oldMap) {
+          None
+        } else {
+          val l = Some(oldMap.get("list").get.asInstanceOf[List[(String, T)]].map(_._1))
+          oldMap = newMap
+          l
+        }
+      }
+      if (orderedOldListOption != None) {
+        val orderedOldWords = orderedOldListOption.get
+        val result = createListMap(newMap.get("list").get.asInstanceOf[List[(String, T)]], orderedOldWords) + ("total" -> oldMap.get("count").get)
+        writeMessage(result)
+      }
+    }
 
     case newList: List[(String, T)] => {
       // synchronized as we need to avoid two same lists sneaking through
 
-      val listOption = lock.synchronized {
-        if (newList == oldList) {
-          None
-        } else {
-          val l = Some(oldList.map(_._1))
-          oldList = newList
-          l
-        }
-      }
+      val orderedOldListOption = getOrderedOldListOptionFromList(newList)
 
-      if (listOption != None) {
-        val orderedOldWords = listOption.get
-        val result: Map[String, Any] = createMessage(newList, orderedOldWords)
+      if (orderedOldListOption != None) {
+        val orderedOldWords = orderedOldListOption.get
+        val result: Map[String, Any] = createListMap(newList, orderedOldWords)
 
-        val message = Serialization.write(result)
-        historyManager.notifyMessage(message)
-        webSocketActor ! message
+        writeMessage(result)
 
       }
     }
