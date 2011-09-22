@@ -34,12 +34,6 @@ object GritterWeb {
       val wordListSocketActor = actorOf(new PublishingWebSocketActor(server, "/gritter/ws/words") {
         override def postOpen(socket: this.type#Socket) {
           wordHistoryManager.getHistory.foreach(s => {
-            println("==============================")
-            if (s.trim()==""){
-              println("Bugger")
-            }
-            println(s)
-            println("==============================")
             socket.send(s)
           })
 

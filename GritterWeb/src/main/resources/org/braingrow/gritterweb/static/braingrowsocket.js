@@ -97,6 +97,60 @@ var wordListSocket = ( function() {
 	return socket;
 }());
 
+var timeZoneSocket = ( function() {
+    function paint(){
+        var newTable = $(document.createElement("div"));
+        newTable.attr("id", "timeZoneHistoryTable");
+        newTable.addClass("historyTable");
+        for (var cntHistory=0,lHistory=history.length;cntHistory<lHistory;cntHistory++){
+            var curHistoryItem = history[cntHistory];
+            var divCurList = $(document.createElement("div"));
+            divCurList.addClass("historyColumn");
+            var divHeader = $(document.createElement("div"));
+            divHeader.addClass("columnItem columnHeader");
+            divHeader.append(document.createTextNode(curHistoryItem.dateTime))
+            divCurList.append(divHeader);
+            var list = curHistoryItem.data;
+            for (var i=0,l=list.length;i<l;i++){
+                var curDiv = $(document.createElement("div"));
+                curDiv.addClass("columnItem");
+                curDiv.addClass(list[i].movement);
+                var curWord = list[i].word;
+                curDiv.append(document.createTextNode(list[i].word + " (" + list[i].count + ")"));
+                divCurList.append(curDiv);
+            }
+            newTable.append(divCurList);
+        }
+        $("#timeZoneHistoryTable").replaceWith(newTable);
+    }
+
+	var history =[];
+    function onData(msg) {
+        var data = $.parseJSON(msg.data) ;
+        var currentTime = new Date(data.dateTime);
+        var hours = currentTime.getHours()
+        var minutes = currentTime.getMinutes()
+        var seconds = currentTime.getSeconds()
+        if (minutes < 10)
+            minutes = "0" + minutes ;
+        if (seconds < 10)
+            seconds = "0" + seconds ;
+        var item =  {"dt":data.dateTime, dateTime:hours + ":" + minutes + ":" + seconds, data:data.list} ;
+
+        history.unshift(item);
+        if (history.length>10){
+            history.pop();
+        }
+        paint();
+    }
+
+	socket = $().createReconnectingWebSocket({
+	    onData:onData,
+	    relativePath:"ws/timezones"
+	})
+	return socket;
+}());
+
 $(document).ready(function() {
 	$( "#tabs" ).tabs();
 
@@ -106,4 +160,5 @@ $(document).ready(function() {
 			alert("WebSocket not supported by this browser");
 	}
 	wordListSocket.startUp();
+	timeZoneSocket.startUp();
 });

@@ -20,10 +20,10 @@ class TwitterStreamListener {
           import java.io._
           println("start")
           val reader: BufferedReader = new BufferedReader(new InputStreamReader(stm, charset))
-          var line = reader.readLine().replaceAll("\0","")
+          var line = reader.readLine().replaceAll("\0", "")
           while (line != null) {
             try {
-              line = reader.readLine()
+              line = reader.readLine().replaceAll("\0", "")
               if (line != null && line.trim.length > 0) {
                 val jValue = parse(line)
                 val statusEvent = StatusEvent.fromJson(jValue)
