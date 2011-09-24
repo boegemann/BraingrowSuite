@@ -97,6 +97,8 @@ var wordListSocket = ( function() {
 	return socket;
 }());
 
+
+
 var timeZoneSocket = ( function() {
     function paint(){
         var newTable = $(document.createElement("div"));

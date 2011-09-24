@@ -1,14 +1,16 @@
 package org.braingrow.gritterweb
 
-import mockobjects.{MockDublettenFilteringSortedListPageAdapater}
+import mockobjects.MockDublettenFilteringSortedListPageAdapater
 import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 import akka.actor.Actor
 import akka.actor.Actor._
-import net.liftweb.json.Serialization
 import scala.util.parsing.json.JSON._
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
 
+@RunWith(classOf[JUnitRunner])
 class AbstractDublettenFilteringSortedListPageAdapterTest extends Spec with ShouldMatchers {
 
 

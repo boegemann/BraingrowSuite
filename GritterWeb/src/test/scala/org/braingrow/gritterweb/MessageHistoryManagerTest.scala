@@ -1,8 +1,11 @@
 package org.braingrow.gritterweb
 
 import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.{Spec, FeatureSpec}
+import org.scalatest.Spec
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class MessageHistoryManagerTest extends Spec with ShouldMatchers {
 
   case class SimpleObject(str: String, int: Int)

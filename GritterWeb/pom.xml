@@ -38,7 +38,6 @@
         </dependency>
 
 
-
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>BraingrowServer</artifactId>
@@ -58,6 +57,14 @@
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
